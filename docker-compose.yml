@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  app_db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_app_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d app_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  test_db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: test_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d test_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: ["./app_entrypoint.sh"]
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@app_db:5432/app_db
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - app_db
+
+  test:
+    build: .
+    command: ["./test_entrypoint.sh"]
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@test_db:5432/test_db
+    env_file:
+      - .env
+    depends_on:
+      - test_db
+
+volumes:
+  postgres_app_data:
+  postgres_test_data:
