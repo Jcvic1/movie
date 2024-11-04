@@ -1,5 +1,5 @@
 # Movie API
-Movie is an API written in python using fastAPI. It performs crud operations retrieving users, authenticating with JWT, storing and retrieving user favourite movies. Movie data is sxtracted from kinopoiskapiuniofficial.
+Movie is an API written in python using fastAPI. It performs crud operations retrieving users, authenticating with JWT, storing and retrieving user favourite movies. Movie data is extracted from kinopoiskapiuniofficial.
 
 ## Usage
 - Without Docker
